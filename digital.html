@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoAnalytics | Digital Campaign Dashboard</title>
+    <!-- Preloading Chart.js to prevent the black flicker -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Prevent scrolling on the main body */
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 240px;
+            background-color: #1a2a3a;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            color: #4ade80;
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            padding: 12px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .sidebar-menu li:hover, .sidebar-menu li.active {
+            background-color: #2d3e50;
+            color: #4ade80;
+        }
+
+        /* Main Content - No Scroll */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #1e293b;
+        }
+
+        /* Compact Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-bottom: 4px solid #4ade80;
+        }
+
+        .card h3 {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .card .value {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+
+        /* Visualization Section - Optimized for Height */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 15px;
+            flex-grow: 1; /* Makes charts fill the remaining screen space */
+            min-height: 0; /* Important for flex children */
+        }
+
+        .chart-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-box h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #334155;
+        }
+
+        /* This ensures the chart canvas stays within its box */
+        .canvas-container {
+            flex-grow: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <h2>EcoAnalytics</h2>
+        <ul class="sidebar-menu">
+            <li class="active">📊 Dashboard</li>
+            <li>📱 Campaigns</li>
+            <li>👥 Audience</li>
+            <li>📄 Reports</li>
+        </ul>
+        <div style="font-size: 12px; color: #64748b; text-align: center;">BS Software Engineering</div>
+    </nav>
+
+    <main class="main-content">
+        <header class="header">
+            <h1>Campaign Performance</h1>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="card">
+                <h3>Impressions</h3>
+                <p class="value">45,201</p>
+            </div>
+            <div class="card">
+                <h3>Clicks</h3>
+                <p class="value">3,842</p>
+            </div>
+            <div class="card">
+                <h3>CTR</h3>
+                <p class="value">8.5%</p>
+            </div>
+            <div class="card">
+                <h3>Conversions</h3>
+                <p class="value">528</p>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-box">
+                <h4>Engagement Trends</h4>
+                <div class="canvas-container">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-box">
+                <h4>Channel Distribution</h4>
+                <div class="canvas-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Disable animation to prevent the "black screen/flicker" glitch 
+        // and ensure the dashboard is ready immediately.
+        Chart.defaults.animation = false;
+
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['W1', 'W2', 'W3', 'W4', 'W5'],
+                datasets: [{
+                    label: 'Clicks',
+                    data: [400, 900, 700, 1200, 1100],
+                    borderColor: '#4ade80',
+                    backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Social', 'Email', 'Ads'],
+                datasets: [{
+                    data: [60, 25, 15],
+                    backgroundColor: ['#4ade80', '#1a2a3a', '#cbd5e1'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
